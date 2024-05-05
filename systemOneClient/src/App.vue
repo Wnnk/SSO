@@ -1,21 +1,25 @@
 <script setup>
 import {onMounted ,ref, onUnmounted} from 'vue';
-import axios from 'axios';
+import instance from '@/api/axios'
+
 const iframeRef = ref(null);
 const systemOneInfo  = ref('');
 
 onMounted(() => {
-  window.addEventListener('message', messageListener);
-  const token = location.href.split('=')[1];
-  if (token) {
-    localStorage.setItem('token', token);
+  const currentUrl = window.location.href;
+  const urlToken = currentUrl.split('=')[1]
+  if (urlToken) {
+    localStorage.setItem('token', urlToken);
+    window.location.href = 'http://localhost:3000';
+  }
+  iframeRef.value.onload = function() {
     sendClientToken();
-  }
-  if (!localStorage.getItem('token')) {
-    window.location.href = `http://localhost:5000?url=${window.location.href}`;
-
-  }
+  };
+  
+  window.addEventListener('message', messageListener);
 });
+
+
 
 /**
  * @description 监听子系统2的消息
@@ -23,7 +27,7 @@ onMounted(() => {
 const messageListener = (e) => {
   console.log(e.data,e.origin)
   if (e.origin === 'http://localhost:4000') {
-    localStorage.setItem('test2', e.data);
+    localStorage.setItem('token', e.data);
   }
 }
 
@@ -33,7 +37,10 @@ const messageListener = (e) => {
 **/ 
 const sendClientToken = () => {
   const targetWindow = iframeRef.value.contentWindow;
-  targetWindow.postMessage('子系统1给子系统2的信息', 'http://localhost:4000/');
+  if (localStorage.getItem('token')) {
+     targetWindow.postMessage(localStorage.getItem('token'), 'http://localhost:4000');
+  }
+ 
 
   
 }
@@ -43,16 +50,8 @@ const sendClientToken = () => {
  * 
 */
 const getServerOneInfo = async() => {
-
-  const res  = await axios({
-    url: 'http://127.0.0.1:3001',
-    method: 'get',
-    headers: {
-      token: localStorage.getItem('token')
-    }
-  })
+  const res = await instance.get('/');
   systemOneInfo.value = res.data;
-  console.log(systemOneInfo.value)
 };
 
 
@@ -64,10 +63,9 @@ onUnmounted(() => {
 <template>
   <div>
     <h1>子系统1</h1>
-    <!-- <button @click="sendClientToken">发送信息个子系统2</button> -->
     <button @click="getServerOneInfo">获取子系统1服务器信息(需要token)</button>
     <h1>{{systemOneInfo}}</h1>
-    <iframe src="http://localhost:4000/" ref="iframeRef" style="display: none;"></iframe>
+    <iframe src="http://localhost:4000/" ref="iframeRef" style="display:none;"></iframe>
   </div>
 </template>
 

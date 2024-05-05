@@ -1,27 +1,32 @@
 <script setup lang='ts'>
 import { onUnmounted, ref, onMounted } from 'vue';
+import instance from '@/api/axios';
 const iframeRef = ref(null);
 const systemTwoInfo = ref('');
-import axios from 'axios';
+
 
 onMounted(() => {
-   window.addEventListener('message', messageListen);
-  const token = location.href.split('=')[1];
+  const currentUrl = window.location.href;
+  const token = currentUrl.split('=')[1]
   if (token) {
     localStorage.setItem('token', token);
-    sendClientToken();
+    window.location.href = 'http://localhost:4000';
+    iframeRef.value.onload = () => {
+      sendClientToken();
+    };
   }
-  if (!localStorage.getItem('token')) {
-    window.location.href = `http://localhost:5000?url=${window.location.href}`;
-  }
+  window.addEventListener('message', messageListener);
+  
 });
+
 
 /**
  * @description: 监听子系统1的消息
  */
-const messageListen = (e) => {
+const messageListener = (e) => {
+  console.log(e);
   if (e.origin === 'http://localhost:3000') {
-    localStorage.setItem('message', e.data);
+    localStorage.setItem('token', e.data);
   }
 }
 
@@ -38,19 +43,13 @@ const sendClientToken = () => {
  * 
   */
 const getServerTwoInfo = async () => {
-  const res  = await axios({
-    url: 'http://127.0.0.1:3001',
-    method: 'get',
-    headers: {
-      token: localStorage.getItem('token')
-    }
-  })
+  const res = await instance.get('/');
   systemTwoInfo.value = res.data;
 };
 
 
 onUnmounted(() => {
-  window.removeEventListener('message', messageListen);
+  window.removeEventListener('message', messageListener);
 })
 </script>
 

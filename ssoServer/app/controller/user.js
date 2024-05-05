@@ -5,6 +5,11 @@ class LoginController extends Controller {
     const { ctx } = this;
     ctx.body = await ctx.service.user.passwordLogin();
   }
+  async register() {
+    const { ctx } = this;
+    ctx.body = await ctx.service.user.register();
+  };
+
 }
 
 module.exports = LoginController;
