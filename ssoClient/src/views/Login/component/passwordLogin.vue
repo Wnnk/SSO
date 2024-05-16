@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {ref,reactive} from "vue"
 import {validatePassword} from "@/utils/validate";
+import { login } from "@/api/user"
 const ruleFormRef = ref(null);
 const ruleForm = ref({
     username: '',
@@ -19,7 +20,7 @@ const rules = reactive({
 
 
 const submitForm = () => {
-
+    login(ruleForm.value);
 }
 
 

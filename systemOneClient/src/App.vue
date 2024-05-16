@@ -1,6 +1,6 @@
 <script setup>
 import {onMounted ,ref, onUnmounted} from 'vue';
-import instance from '@/api/axios'
+import instance from '@/api/instance'
 
 const iframeRef = ref(null);
 const systemOneInfo  = ref('');

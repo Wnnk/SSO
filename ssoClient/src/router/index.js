@@ -9,6 +9,16 @@ const router = createRouter({
       name: 'Login',
       component: () => import('@/views/Login/userLogin.vue')
     },
+    {
+      path:'/upload',
+      name: 'Upload',
+      component: () => import('@/views/Upload/uploadFile.vue')
+    },
+    {
+      path: '/formTable',
+      name: 'FormTable',
+      component: () => import('@/views/FormTable/formTable.vue')
+    },
   ]
 })
 

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import {ref,reactive} from "vue"
 import {validatePassword} from "@/utils/validate";
-import instance from "@/api/instance";
-import {rsaData} from "@/utils/rsaData";
+import {register, login} from '@/api/user'
+
 const registerForm = ref({
   username: '',
   password: '',
@@ -10,14 +10,17 @@ const registerForm = ref({
   code: '',
   isAgree: false
 })
-const register  = () => {
+const userRegister  = async() => {
   if (!registerForm.value.isAgree) return;
-  instance({
-    url: '/register',
-    data: {
-      rsaData: rsaData(registerForm.value)
-    }
-  })
+  register(registerForm.value);
+  registerForm.value = {
+    username: '',
+    password: '',
+    phone: '13797232936',
+    code: '',
+    isAgree: false
+  }
+ 
 }
 const getPhoneCode = () => {
 
@@ -67,7 +70,7 @@ const rules = reactive({
         <el-checkbox v-model="registerForm.isAgree" >我已阅读并同意<a href="#">《用户协议》</a></el-checkbox>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="register">注册</el-button>
+        <el-button type="primary" @click="userRegister">注册</el-button>
       </el-form-item>
 
     </el-form>

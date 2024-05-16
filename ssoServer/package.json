@@ -11,10 +11,12 @@
     "egg": "^3.17.5",
     "egg-cors": "^3.0.0",
     "egg-jwt": "^3.1.7",
+    "egg-multipart": "^3.3.0",
     "egg-mysql": "^4.0.0",
     "egg-mysql2": "^1.0.2",
     "egg-scripts": "2",
     "egg-sequelize": "^6.0.0",
+    "multer": "^1.4.5-lts.1",
     "mysql2": "^3.9.7",
     "node-jsencrypt": "^1.0.0"
   },

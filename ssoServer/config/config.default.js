@@ -75,6 +75,11 @@ module.exports = appInfo => {
     },
   };
 
+  config.multipart = {
+    // mode: 'file',
+    whitelist: [ '.bin', '.txt', '.png', '.jpg', '.jpeg', '.gif' ],
+  };
+
   // 私钥
   config.private_key = `-----BEGIN PRIVATE KEY-----
   MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDJtq2Z+1SfJktY

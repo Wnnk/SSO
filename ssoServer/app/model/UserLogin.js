@@ -4,7 +4,7 @@ module.exports = app => {
   const { STRING, INTEGER } = app.Sequelize;
 
   const UserLogin = app.model.define('user_login', {
-    uuid: { type: INTEGER, primaryKey: true, autoIncrement: true  },
+    uuid: { type: INTEGER, primaryKey: true, autoIncrement: true },
     user_id: INTEGER,
     password: STRING,
     salt: STRING,
@@ -16,8 +16,6 @@ module.exports = app => {
   UserLogin.associate = function() {
     app.model.UserLogin.belongsTo(app.model.UserInfo, { as: 'user', foreignKey: 'user_id' });
   };
-
-
 
   return UserLogin;
 };
