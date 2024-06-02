@@ -8,6 +8,7 @@ const upload = async(formData) => {
     data: formData,
     /* axios不能设置Content-Type */
   })
+  return res.data;
 }
 
 const isHavingFile = async(fileHash, size, name) => {

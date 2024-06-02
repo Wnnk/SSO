@@ -16,8 +16,12 @@ module.exports = {
     enable: true,
     package: 'egg-sequelize',
   },
-  multipart: {
+  // multipart: {
+  //   enable: true,
+  //   package: 'egg-multipart',
+  // },
+  static: {
     enable: true,
-    package: 'egg-multipart',
+    package: 'egg-static',
   },
 };

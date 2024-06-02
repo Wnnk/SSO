@@ -24,10 +24,12 @@ class LoginController extends Controller {
     if (hasFile) {
       /* 存在目标文件 */
       const fileSize = fse.statSync(target).size;
+      const url = await this.getFileUrl(fileHash, name);
       if (fileSize === size) {
         ctx.body = {
           code: 0,
           message: true,
+          url,
         };
       }
     } else if (fse.existsSync(folder)) {
@@ -71,10 +73,12 @@ class LoginController extends Controller {
       const { uploaded, fileList } = await this.checkFile(fileHash, total);
       if (uploaded) {
         await this.mergeFile(fileList, fileHash, ext, fileName);
+        const url = await this.getFileUrl(fileHash, fileName);
         writeStream.end();
         ctx.body = {
           code: 0,
           message: '上传成功',
+          url,
         };
       } else {
         ctx.body = {
@@ -142,6 +146,12 @@ class LoginController extends Controller {
       console.log('关闭出错流');
       writeStream.end();
     });
+  }
+
+  async getFileUrl(fileHash, fileName) {
+    const { ctx } = this;
+    const url = `${ctx.origin}/temp/${fileHash}/${fileName}`;
+    return url;
   }
 
 }

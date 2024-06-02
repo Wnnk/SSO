@@ -4,8 +4,9 @@ import { upload, isHavingFile } from "../../api/upload"
 import SparkMD5 from 'spark-md5';
 import instance from '@/api/instance';
 import { ElMessage } from 'element-plus'
-import { throwError } from 'element-plus/es/utils';
+import previewFile from "./previewFile.vue"
 const inputEl = ref<HTMLInputElement | null>(null);
+const upLoadFileUrl = ref<string>("");
 
 /** 
  * @description: 触发单个文件上传按钮
@@ -16,20 +17,35 @@ const handleClick = () => {
   }
 };
 /** 
+ * @description: 拖拽上传文件
+ * 
+  */
+ const handleDragover = (e: InputEvent) => {
+  /* 阻止默认行为 */
+   e.preventDefault();
+  //  console.log(e.dataTransfer);
+   selectFile(e);
+ };
+
+
+/** 
  * @description: 选择文件后触发事件
 */
-const selectFile = async(e:Event) => {
-  const file  =  (e.target as HTMLInputElement).files?.[0];
+const selectFile = async(e:InputEvent) => {
+  const file  =  (e.target as HTMLInputElement).files?.[0] || (e.dataTransfer as DataTransfer).files[0];
   /* 整个文件添加哈希值 */
   const fileHash = await createFileHash(file);
   /* 校验是否上传过 */
-  const {code, message, currentFileSize}  = await checkFileUploaded(fileHash, file.size, file.name);
+  const {code, message, currentFileSize, url}  = await checkFileUploaded(fileHash, file.size, file.name);
   let chunkList = [];
   if (code === 0){
+    /* 文件已上传过 code=0 */
     ElMessage({
       message: message,
       type: 'success',
     })
+    upLoadFileUrl.value = url;
+    console.log(upLoadFileUrl.value);
     return;
   }else if (code === 1){
     chunkList  = await createChunks(file,1024 * 1024 * 2, currentFileSize); //按照2M分片
@@ -132,7 +148,17 @@ const uploadChunks = (uploadChunkList: any[]) => {
         'Content-Type': 'multipart/form-data'
       }
     })
+    .then((res) => {
+      if (res.data.code === 0) {
+        upLoadFileUrl.value = res.data.url;
+        ElMessage({
+          message: '上传成功',
+          type:'success',
+        });
+      }
+    })
   })
+  
 }
 
 /** 
@@ -144,40 +170,26 @@ const uploadChunks = (uploadChunkList: any[]) => {
   */
 const checkFileUploaded = async (fileHash:string, fileSize:number, fileName:string):Promise<any> => {
 
-  const {code, message, currentFileSize}  = await isHavingFile(fileHash, fileSize, fileName);
-  return {code, message, currentFileSize}
+  const {code, message, currentFileSize, url}  = await isHavingFile(fileHash, fileSize, fileName);
+  return {code, message, currentFileSize, url}
 };
 
 
-/** 
- * @description: 大文件分片
- * @returns [{formData,index}] formData: FormData对象, index: 分片索引
-  */
 
-const textFile = (e) => {
-  console.log(e.target.files[0]);
-  const formData = new FormData();
-  formData.append('type', 'text');
-  formData.append('file', e.target.files[0], e.target.files[0].name);
-  instance({
-    method: 'post',
-    url: '/uploadFile',
-    data: formData,
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    }
-  })
-}
 
 </script>
 
 <template>
   <div class="upload-file">
     <h1>Upload File</h1>
-    <div class="upload-container" @click="handleClick"></div>
+    <div class="upload-container" 
+      @click="handleClick"
+      @drop="handleDragover"
+      @dragover.prevent
+    ></div>
 
     <input type="file" class="upload-input" ref="inputEl" @change="selectFile" />
-    <!-- <input type="file" @change="textFile"> -->
+    <previewFile v-if="upLoadFileUrl" :url="upLoadFileUrl" />
   </div>
 </template>
 
@@ -198,4 +210,5 @@ const textFile = (e) => {
 .upload-input {
   display: none;
 }
+
 </style>

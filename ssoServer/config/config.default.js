@@ -1,5 +1,5 @@
 /* eslint valid-jsdoc: "off" */
-
+const path = require('path');
 /**
  * @param {Egg.EggAppInfo} appInfo app info
  */
@@ -77,7 +77,17 @@ module.exports = appInfo => {
 
   config.multipart = {
     // mode: 'file',
-    whitelist: [ '.bin', '.txt', '.png', '.jpg', '.jpeg', '.gif' ],
+    whitelist: [ '.bin', '.txt', '.png', '.jpg', '.jpeg', '.gif','.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx','.mp3','.mp4' ],
+  };
+  config.static = {
+    prefix: '/temp/',
+    dir: path.join(appInfo.baseDir, 'app/temp'),
+    // dirs: [ dir1, dir2 ] or [ dir1, { prefix: '/static2', dir: dir2 } ],
+    // support lazy load
+    // dynamic: true,
+    // preload: false,
+    // buffer: false,
+    // maxFiles: 1000,
   };
 
   // 私钥

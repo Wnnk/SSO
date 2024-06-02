@@ -16,6 +16,7 @@
     "egg-mysql2": "^1.0.2",
     "egg-scripts": "2",
     "egg-sequelize": "^6.0.0",
+    "egg-static": "^2.3.1",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.9.7",
     "node-jsencrypt": "^1.0.0"
